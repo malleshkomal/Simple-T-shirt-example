@@ -1,0 +1,355 @@
+<title>Garment LCA Pipeline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; the pipeline strip is the spine, each stage is a section below it. */
+:root {
+  --bg: #f7f8f6; --surface: #ffffff; --ink: #111512; --ink-2: #4c534e; --muted: #737a75;
+  --line: #dfe3df; --accent: #1f6f5c; --accent-soft: #e3efea;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --bad: #d03b3b;
+  --display: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --body: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #131614; --surface: #1b1f1c; --ink: #eef1ee; --ink-2: #bfc6c0; --muted: #929a94;
+  --line: #2f3530; --accent: #5fc3a5; --accent-soft: #1f2e28;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --bad: #e66767;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #131614; --surface: #1b1f1c; --ink: #eef1ee; --ink-2: #bfc6c0; --muted: #929a94;
+  --line: #2f3530; --accent: #5fc3a5; --accent-soft: #1f2e28;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --bad: #e66767;
+  color-scheme: dark; }
+
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 980px; margin: 0 auto; padding-block: 40px 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 56px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(28px, 5vw, 40px); line-height: 1.1; font-weight: 700; }
+h2 { font-size: 22px; font-weight: 650; }
+h3 { font-size: 15px; font-weight: 600; }
+p { margin: 0; max-width: 66ch; color: var(--ink-2); }
+code, .mono { font-family: var(--mono); font-size: 0.86em; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+header { display: grid; gap: 12px; }
+section { display: grid; gap: 18px; min-width: 0; }
+.sec-head { display: grid; gap: 6px; }
+
+/* Pipeline strip */
+.flow { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; overflow-x: auto; }
+.flow svg { display: block; min-width: 720px; width: 100%; height: auto; }
+.flow .node rect { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; transition: fill .3s, stroke .3s; }
+.flow .node.on rect { fill: var(--accent-soft); stroke: var(--accent); }
+.flow .node text { fill: var(--ink); font-family: var(--body); }
+.flow .node .cnt { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+.flow .pipe { stroke: var(--line); stroke-width: 2; }
+.flow .packet { fill: var(--accent); }
+.flow .packet.bad { fill: var(--bad); }
+
+/* Sources */
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+.src { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.src .tag { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.src pre { margin: 0; font-family: var(--mono); font-size: 11.5px; line-height: 1.5; color: var(--ink-2);
+  background: var(--bg); border-radius: 6px; padding: 10px; overflow-x: auto; white-space: pre; }
+.src .warn { color: var(--bad); }
+
+/* Schema */
+.schema { display: grid; grid-template-columns: 1fr minmax(0, 1.25fr) 1fr; gap: 14px; align-items: center; }
+.schema .col { display: grid; gap: 14px; }
+.tbl { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; font-family: var(--mono); font-size: 12px; }
+.tbl .tn { padding: 7px 10px; background: var(--bg); border-bottom: 1px solid var(--line); font-weight: 500; color: var(--ink); }
+.tbl .f { padding: 3px 10px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; }
+.tbl .f span:last-child { color: var(--muted); }
+.tbl.fact { border-color: var(--accent); }
+.tbl.fact .tn { background: var(--accent-soft); color: var(--accent); }
+.tbl .k { color: var(--accent); }
+@media (max-width: 720px) { .schema { grid-template-columns: 1fr; } }
+
+/* Charts */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 12px; min-width: 0; }
+.card-top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: baseline; justify-content: space-between; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+.chart { position: relative; overflow-x: auto; }
+.chart svg { min-width: 620px; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; }
+.chart text { font-family: var(--body); fill: var(--ink-2); font-size: 12px; }
+.chart .val { fill: var(--ink); font-family: var(--mono); font-size: 12px; }
+.chart .grid line { stroke: var(--line); }
+.chart .axis { fill: var(--muted); font-size: 11px; font-family: var(--mono); }
+.btn { font: 500 13px var(--body); color: var(--accent); background: var(--accent-soft); border: 1px solid transparent; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+.btn:hover { border-color: var(--accent); }
+.btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px;
+  padding: 8px 10px; font-size: 12px; box-shadow: 0 4px 14px rgb(0 0 0 / .12); min-width: 150px; z-index: 2; color: var(--ink); }
+.tip b { font-weight: 600; display: block; margin-bottom: 4px; }
+.tip .r { display: flex; justify-content: space-between; gap: 12px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+.tip .r i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+.note { font-size: 12.5px; color: var(--muted); }
+.stats { display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 13px; color: var(--ink-2); }
+.stats b { font-family: var(--mono); color: var(--ink); font-weight: 500; margin-right: 4px; }
+.run { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; overflow-x: auto; }
+.run pre { margin: 0; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+.run .c { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">Life cycle assessment · 2025 example data</div>
+  <h1>Garment LCA Pipeline</h1>
+  <p>How carbon data for three products moves from raw supplier, meter and shipping records into a clean star schema, and then into animated charts. Every number on this page comes from <code>pipeline.py</code> running on simulated data.</p>
+  <div class="stats" id="stats"></div>
+</header>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">The pipeline</div><h2>Six steps, from raw files to charts</h2>
+  <p>Records flow left to right. The red record is a bill-of-materials row with no quantity, which validation rejects.</p></div>
+  <div class="flow"><svg id="flow" viewBox="0 0 900 150" role="img" aria-label="Pipeline: collect, validate, transform, calculate, load, visualize"></svg></div>
+  <button class="btn" id="flowReplay" style="justify-self:start">Replay flow</button>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Step 1 · Data collection</div><h2>Four sources, landed unchanged</h2>
+  <p><code>collect.py</code> writes each source as-is to <code>data/raw/</code>. Each source uses its own format and units; cleanup waits for later steps.</p></div>
+  <div class="grid4">
+    <div class="src"><span class="tag">ERP export · CSV</span><h3>Bill of materials</h3>
+<pre>product_id,material,qty,unit
+TSHIRT,cotton,0.25,kg
+TSHIRT,polyester,50,g
+<span class="warn">SNEAKER,leather,,kg</span></pre></div>
+    <div class="src"><span class="tag">Utility API · JSON</span><h3>Factory meters</h3>
+<pre>{"product_id": "TSHIRT",
+ "month": "2025-01",
+ "units_produced": 34758,
+ "electricity":
+   {"value": 40.52,
+    "unit": "MWh"}}</pre></div>
+    <div class="src"><span class="tag">Transport system · CSV</span><h3>Shipments</h3>
+<pre>id,product,mode,km,units
+SHP-00001,TSHIRT,sea,16000,24867
+SHP-00002,TSHIRT,truck,600,24867</pre></div>
+    <div class="src"><span class="tag">Team survey · JSON</span><h3>Use and end of life</h3>
+<pre>"TSHIRT": {"washes": 50,
+  "kwh_per_wash": 0.07,
+  "landfill_share": 0.6,
+  "recycle_share": 0.4}</pre></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Step 2 · Data structure</div><h2>Typed records in, star schema out</h2>
+  <p>Inside the pipeline every flow becomes an <code>InventoryRecord</code> (product, stage, activity, amount, unit). Results load into a SQLite star schema: one fact table of impacts joined to four small dimension tables.</p></div>
+  <div class="schema">
+    <div class="col">
+      <div class="tbl"><div class="tn">dim_product</div><div class="f"><span class="k">product_id</span><span>PK</span></div><div class="f"><span>name</span><span>text</span></div></div>
+      <div class="tbl"><div class="tn">dim_stage</div><div class="f"><span class="k">stage</span><span>PK</span></div><div class="f"><span>stage_order</span><span>int</span></div></div>
+    </div>
+    <div class="tbl fact"><div class="tn">fact_impact</div>
+      <div class="f"><span class="k">product_id</span><span>FK</span></div><div class="f"><span class="k">stage</span><span>FK</span></div>
+      <div class="f"><span class="k">activity</span><span>FK</span></div><div class="f"><span class="k">month</span><span>FK</span></div>
+      <div class="f"><span>kgco2e_per_unit</span><span>real</span></div><div class="f"><span>units_produced</span><span>int</span></div>
+      <div class="f"><span>kgco2e_total</span><span>real</span></div></div>
+    <div class="col">
+      <div class="tbl"><div class="tn">dim_factor</div><div class="f"><span class="k">activity</span><span>PK</span></div><div class="f"><span>unit</span><span>text</span></div><div class="f"><span>kgco2e_per_unit</span><span>real</span></div><div class="f"><span>source</span><span>text</span></div></div>
+      <div class="tbl"><div class="tn">dim_month</div><div class="f"><span class="k">month</span><span>PK</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Step 4 · Visualization</div><h2>Animated charts</h2>
+  <p>Each chart animates once when the page loads. On a phone, swipe a chart sideways to see all of it. Hover over a bar or line for exact values, and use Replay to run the animation again.</p></div>
+
+  <div class="card">
+    <div class="card-top"><h3>Footprint per product, by life cycle stage (kg CO2e per unit)</h3><button class="btn" data-replay="stack">Replay</button></div>
+    <div class="legend" id="stageLegend"></div>
+    <div class="chart" id="stack"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><h3>Monthly emissions by product (t CO2e)</h3><button class="btn" data-replay="lines">Replay</button></div>
+    <div class="legend" id="prodLegend1"></div>
+    <div class="chart" id="lines"></div>
+    <div class="note">Dotted line: the factory efficiency program began in July and cut electricity per unit by about 12%.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-top"><h3>Cumulative emissions race (t CO2e)</h3><button class="btn" data-replay="race">Replay</button></div>
+    <div class="chart" id="race"></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><div class="eyebrow">Run it yourself</div><h2>Four commands</h2></div>
+  <div class="run"><pre><span class="c"># pip install pandas matplotlib</span>
+python collect.py     <span class="c"># step 1: write raw source files to data/raw/</span>
+python pipeline.py    <span class="c"># steps 2–3: validate, transform, calculate, load into lca.db and JSON</span>
+python visualize.py   <span class="c"># step 4: animated GIF charts in output/</span>
+python build_page.py  <span class="c"># step 4: this animated HTML page, output/lca_dashboard.html</span></pre></div>
+</section>
+</div>
+
+<script>
+const D = __DATA__;
+const PIDS = Object.keys(D.per_unit_by_stage);
+const NAME = D.products, STAGES = D.stages, MONTHS = D.months;
+const STAGE_LABEL = s => s.replace(/_/g, " ").replace(/^./, c => c.toUpperCase());
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const NS = "http://www.w3.org/2000/svg";
+const css = v => `var(--${v})`;
+const STAGE_COL = STAGES.map((_, i) => css("s" + (i + 1)));
+const PROD_COL = Object.fromEntries(PIDS.map((p, i) => [p, css("s" + (i + 1))]));
+const fmt = (v, d = 2) => v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+function el(tag, attrs = {}, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function animate(dur, fn) { if (reduce) { fn(1); return; } const t0 = performance.now(); const step = now => { const t = Math.min(Math.max((now - t0) / dur, 0), 1); fn(ease(t)); if (t < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); }
+function tipFor(host) { let t = host.querySelector(".tip"); if (!t) { t = document.createElement("div"); t.className = "tip"; t.hidden = true; host.appendChild(t); } return t; }
+function placeTip(host, tip, x, y) { const w = host.clientWidth; tip.hidden = false; const tw = tip.offsetWidth; tip.style.left = Math.min(Math.max(x + 14, 0), w - tw) + "px"; tip.style.top = (y + 14) + "px"; }
+
+// header stats
+const L = D.pipeline_log;
+const yearTotal = PIDS.reduce((a, p) => a + Object.values(D.monthly_tonnes[p]).reduce((x, y) => x + y, 0), 0);
+document.getElementById("stats").innerHTML =
+  `<span><b>${L.rows_in}</b>raw rows collected</span><span><b>${L.rows_rejected}</b>rejected</span><span><b>${L.fact_rows}</b>fact rows loaded</span><span><b>${fmt(yearTotal, 0)} t</b>CO2e in 2025</span>`;
+
+document.getElementById("stageLegend").innerHTML = STAGES.map((s, i) => `<span><i style="background:${STAGE_COL[i]}"></i>${STAGE_LABEL(s)}</span>`).join("");
+document.getElementById("prodLegend1").innerHTML = PIDS.map(p => `<span><i style="background:${PROD_COL[p]}"></i>${NAME[p]}</span>`).join("");
+
+/* ---------- Pipeline flow ---------- */
+const FLOW = [["Collect", `${L.rows_in} rows`], ["Validate", `${L.rows_rejected} rejected`], ["Transform", "units → factor"], ["Calculate", "amount × EF"], ["Load", `${L.fact_rows} facts`], ["Visualize", "3 charts"]];
+function drawFlow() {
+  const svg = document.getElementById("flow"); svg.innerHTML = "";
+  const w = 118, gap = (900 - 6 * w) / 5, y = 45, h = 62;
+  el("line", { x1: w / 2, x2: 900 - w / 2, y1: y + h / 2, y2: y + h / 2, class: "pipe" }, svg);
+  const nodes = FLOW.map(([t, c], i) => { const g = el("g", { class: "node", transform: `translate(${i * (w + gap)},${y})` }, svg);
+    el("rect", { width: w, height: h, rx: 8 }, g); const a = el("text", { x: w / 2, y: 27, "text-anchor": "middle", "font-size": 14, "font-weight": 600 }, g); a.textContent = t;
+    const b = el("text", { x: w / 2, y: 46, "text-anchor": "middle", class: "cnt" }, g); b.textContent = c; return g; });
+  const stepX = i => i * (w + gap) + w / 2;
+  const packets = [];
+  for (let k = 0; k < 9; k++) packets.push({ bad: k === 4, delay: k * 0.07, c: el("circle", { r: 5, cy: y + h / 2, cx: stepX(0), class: "packet" + (k === 4 ? " bad" : "") }, svg) });
+  const lbl = el("text", { x: stepX(1), y: y + h + 26, "text-anchor": "middle", fill: css("bad"), "font-size": 12, opacity: 0 }, svg);
+  lbl.textContent = "leather: no quantity";
+  animate(4200, t => {
+    nodes.forEach((n, i) => n.classList.toggle("on", t >= i / 5.6));
+    packets.forEach(p => {
+      const local = Math.min(Math.max((t - p.delay) / (1 - 0.6), 0), 1);
+      let x = stepX(0) + (stepX(5) - stepX(0)) * local, cy = y + h / 2;
+      if (p.bad && x > stepX(1)) { x = stepX(1); const drop = Math.min((local - 0.2) * 5, 1); cy = y + h / 2 + 34 * Math.max(drop, 0); lbl.setAttribute("opacity", Math.max(drop, 0)); }
+      p.c.setAttribute("cx", x); p.c.setAttribute("cy", cy);
+      p.c.setAttribute("opacity", local >= 1 && !p.bad ? 0 : 1);
+    });
+  });
+}
+
+/* ---------- Stacked bars ---------- */
+function drawStack() {
+  const host = document.getElementById("stack"); host.innerHTML = "";
+  const W = 900, rowH = 58, padL = 140, padR = 70, top = 10, H = top + PIDS.length * rowH + 30;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Stacked bars of kg CO2e per unit by stage" }, host);
+  const totals = PIDS.map(p => STAGES.reduce((a, s) => a + D.per_unit_by_stage[p][s], 0));
+  const xmax = Math.ceil(Math.max(...totals) / 2) * 2;
+  const X = v => padL + v / xmax * (W - padL - padR);
+  const g = el("g", { class: "grid" }, svg);
+  for (let v = 0; v <= xmax; v += 2) { el("line", { x1: X(v), x2: X(v), y1: top, y2: H - 24 }, g); const t = el("text", { x: X(v), y: H - 6, "text-anchor": "middle", class: "axis" }, svg); t.textContent = v; }
+  const tip = tipFor(host);
+  const segs = [];
+  PIDS.forEach((p, r) => {
+    const y = top + r * rowH + 12, bh = 30;
+    const n = el("text", { x: padL - 12, y: y + bh / 2 + 4, "text-anchor": "end", "font-size": 13 }, svg); n.textContent = NAME[p];
+    let acc = 0;
+    STAGES.forEach((s, i) => { const v = D.per_unit_by_stage[p][s]; const rect = el("rect", { y, height: bh, fill: STAGE_COL[i], stroke: css("surface"), "stroke-width": 2 }, svg);
+      segs.push({ rect, start: acc, v, i }); acc += v;
+      rect.addEventListener("mousemove", e => { const b = host.getBoundingClientRect();
+        tip.innerHTML = `<b>${NAME[p]}</b>` + STAGES.map((s2, j) => `<div class="r" style="${j === i ? "color:var(--ink)" : ""}"><span><i style="background:${STAGE_COL[j]}"></i>${STAGE_LABEL(s2)}</span><span>${fmt(D.per_unit_by_stage[p][s2])}</span></div>`).join("") + `<div class="r" style="color:var(--ink)"><span>Total</span><span>${fmt(totals[r])}</span></div>`;
+        placeTip(host, tip, e.clientX - b.left, e.clientY - b.top); });
+      rect.addEventListener("mouseleave", () => tip.hidden = true); });
+    const tv = el("text", { y: y + bh / 2 + 4, class: "val", opacity: 0 }, svg); tv.textContent = fmt(totals[r]); segs.push({ label: tv, total: totals[r] });
+  });
+  animate(2600, t => {
+    segs.forEach(s => {
+      if (s.label) { s.label.setAttribute("x", X(s.total) + 8); s.label.setAttribute("opacity", Math.max((t - .85) / .15, 0)); return; }
+      const local = Math.min(Math.max(t * STAGES.length - s.i, 0), 1);
+      s.rect.setAttribute("x", X(s.start)); s.rect.setAttribute("width", Math.max(X(s.start + s.v * local) - X(s.start), 0));
+    });
+  });
+}
+
+/* ---------- Monthly lines ---------- */
+function drawLines() {
+  const host = document.getElementById("lines"); host.innerHTML = "";
+  const W = 900, H = 320, padL = 44, padR = 150, top = 14, bot = 30;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Monthly t CO2e per product, line chart" }, host);
+  const ymax = Math.ceil(Math.max(...PIDS.flatMap(p => Object.values(D.monthly_tonnes[p]))) / 50) * 50;
+  const X = i => padL + i / (MONTHS.length - 1) * (W - padL - padR), Y = v => top + (1 - v / ymax) * (H - top - bot);
+  const g = el("g", { class: "grid" }, svg);
+  for (let v = 0; v <= ymax; v += 50) { el("line", { x1: padL, x2: W - padR, y1: Y(v), y2: Y(v) }, g); const t = el("text", { x: padL - 8, y: Y(v) + 4, "text-anchor": "end", class: "axis" }, svg); t.textContent = v; }
+  MONTHS.forEach((m, i) => { const t = el("text", { x: X(i), y: H - 8, "text-anchor": "middle", class: "axis" }, svg); t.textContent = new Date(m + "-15").toLocaleString("en-US", { month: "short" }); });
+  el("line", { x1: X(6), x2: X(6), y1: top, y2: H - bot, stroke: css("muted"), "stroke-dasharray": "2 4" }, svg);
+  const series = PIDS.map(p => { const pts = MONTHS.map((m, i) => [X(i), Y(D.monthly_tonnes[p][m])]);
+    const path = el("path", { d: "M" + pts.map(q => q.join(",")).join("L"), fill: "none", stroke: PROD_COL[p], "stroke-width": 2, "stroke-linejoin": "round" }, svg);
+    const len = path.getTotalLength(); path.style.strokeDasharray = len; path.style.strokeDashoffset = len;
+    const dot = el("circle", { r: 4.5, fill: PROD_COL[p], stroke: css("surface"), "stroke-width": 2 }, svg);
+    const lab = el("text", { class: "val", "font-size": 12 }, svg); return { p, path, len, dot, lab, pts }; });
+  // spread end labels so they never collide
+  const ends = series.map(s => ({ s, y: s.pts.at(-1)[1] })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 16) ends[i].y = ends[i - 1].y + 16;
+  const cross = el("line", { y1: top, y2: H - bot, stroke: css("ink-2"), "stroke-width": 1, opacity: 0 }, svg);
+  const tip = tipFor(host);
+  const hit = el("rect", { x: padL, y: top, width: W - padL - padR, height: H - top - bot, fill: "transparent" }, svg);
+  hit.addEventListener("mousemove", e => { const r = svg.getBoundingClientRect(); const sx = (e.clientX - r.left) * W / r.width;
+    const i = Math.round((sx - padL) / (W - padL - padR) * (MONTHS.length - 1)); if (i < 0 || i >= MONTHS.length) return;
+    cross.setAttribute("x1", X(i)); cross.setAttribute("x2", X(i)); cross.setAttribute("opacity", .5);
+    tip.innerHTML = `<b>${MONTHS[i]}</b>` + PIDS.map(p => `<div class="r"><span><i style="background:${PROD_COL[p]}"></i>${NAME[p]}</span><span>${fmt(D.monthly_tonnes[p][MONTHS[i]], 1)} t</span></div>`).join("");
+    const hb = host.getBoundingClientRect(); placeTip(host, tip, e.clientX - hb.left, e.clientY - hb.top); });
+  hit.addEventListener("mouseleave", () => { tip.hidden = true; cross.setAttribute("opacity", 0); });
+  animate(3200, t => series.forEach(s => {
+    s.path.style.strokeDashoffset = s.len * (1 - t);
+    const pt = s.path.getPointAtLength(s.len * t); s.dot.setAttribute("cx", pt.x); s.dot.setAttribute("cy", pt.y);
+    const fi = Math.min(Math.round(t * (MONTHS.length - 1)), MONTHS.length - 1);
+    const ly = t >= 1 ? ends.find(e => e.s === s).y : pt.y;
+    s.lab.setAttribute("x", pt.x + 10); s.lab.setAttribute("y", ly + 4);
+    s.lab.textContent = `${NAME[s.p]} ${fmt(D.monthly_tonnes[s.p][MONTHS[fi]], 0)} t`;
+  }));
+}
+
+/* ---------- Cumulative race ---------- */
+function drawRace() {
+  const host = document.getElementById("race"); host.innerHTML = "";
+  const W = 900, rowH = 52, padL = 140, padR = 90, top = 34, H = top + PIDS.length * rowH + 28;
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "Cumulative emissions by product over 2025" }, host);
+  const cum = Object.fromEntries(PIDS.map(p => { let a = 0; return [p, MONTHS.map(m => a += D.monthly_tonnes[p][m])]; }));
+  const xmax = Math.ceil(Math.max(...PIDS.map(p => cum[p].at(-1))) / 500) * 500;
+  const X = v => padL + v / xmax * (W - padL - padR);
+  const g = el("g", { class: "grid" }, svg);
+  for (let v = 0; v <= xmax; v += 500) { el("line", { x1: X(v), x2: X(v), y1: top - 6, y2: H - 24 }, g); const t = el("text", { x: X(v), y: H - 6, "text-anchor": "middle", class: "axis" }, svg); t.textContent = fmt(v, 0); }
+  const monthLbl = el("text", { x: padL, y: 18, class: "val", "font-size": 14 }, svg);
+  const tip = tipFor(host);
+  const bars = PIDS.map(p => { const gr = el("g", {}, svg);
+    const r = el("rect", { x: X(0), height: 30, rx: 4, fill: PROD_COL[p] }, gr);
+    const n = el("text", { x: padL - 12, y: 20, "text-anchor": "end", "font-size": 13 }, gr); n.textContent = NAME[p];
+    const v = el("text", { y: 20, class: "val" }, gr);
+    r.addEventListener("mousemove", e => { const b = host.getBoundingClientRect(); tip.innerHTML = `<b>${NAME[p]}</b><div class="r"><span>2025 total</span><span>${fmt(cum[p].at(-1), 0)} t</span></div>`; placeTip(host, tip, e.clientX - b.left, e.clientY - b.top); });
+    r.addEventListener("mouseleave", () => tip.hidden = true);
+    return { p, gr, r, v, y: null }; });
+  const linear = reduce ? f => f(1) : f => { const t0 = performance.now(), dur = 5200; const step = now => { const t = Math.min(Math.max((now - t0) / dur, 0), 1); f(t); if (t < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); };
+  linear(t => {
+    const pos = t * MONTHS.length, k = Math.min(Math.floor(pos), MONTHS.length - 1), frac = pos - k;
+    const val = p => t >= 1 ? cum[p].at(-1) : (k ? cum[p][k - 1] : 0) + (cum[p][k] - (k ? cum[p][k - 1] : 0)) * frac;
+    const order = [...PIDS].sort((a, b) => val(b) - val(a));
+    monthLbl.textContent = `Through ${new Date(MONTHS[k] + "-15").toLocaleString("en-US", { month: "long", year: "numeric" })}`;
+    bars.forEach(b => { const target = top + order.indexOf(b.p) * rowH; b.y = b.y == null ? target : b.y + (target - b.y) * .15;
+      b.gr.setAttribute("transform", `translate(0,${b.y})`); const v = val(b.p);
+      b.r.setAttribute("width", Math.max(X(v) - X(0), 0)); b.v.setAttribute("x", X(v) + 8); b.v.textContent = fmt(v, 0) + " t"; });
+  });
+}
+
+const DRAW = { stack: drawStack, lines: drawLines, race: drawRace };
+document.querySelectorAll("[data-replay]").forEach(b => b.addEventListener("click", () => DRAW[b.dataset.replay]()));
+document.getElementById("flowReplay").addEventListener("click", drawFlow);
+drawFlow(); drawStack(); drawLines(); drawRace();
+</script>
