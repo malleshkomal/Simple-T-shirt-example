@@ -1,0 +1,10 @@
+product_id,material,qty_per_unit,unit,supplier_id,origin
+TSHIRT,cotton,0.25,kg,SUP-01,IN
+TSHIRT,polyester,50,g,SUP-02,CN
+JEANS,cotton,0.8,kg,SUP-01,IN
+JEANS,elastane,20,g,SUP-03,CN
+JEANS,metal_trims,30,g,SUP-04,TR
+SNEAKER,synthetic_rubber,0.35,kg,SUP-05,VN
+SNEAKER,polyester,0.2,kg,SUP-02,CN
+SNEAKER,eva_foam,150,g,SUP-05,VN
+SNEAKER,leather,,kg,SUP-06,BR

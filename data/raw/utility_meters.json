@@ -1,0 +1,509 @@
+{
+  "source": "utility-api",
+  "readings": [
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-01",
+      "units_produced": 34758,
+      "electricity": {
+        "value": 40.52,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 13590.4,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-02",
+      "units_produced": 32494,
+      "electricity": {
+        "value": 39.55,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 13227.3,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-03",
+      "units_produced": 42509,
+      "electricity": {
+        "value": 49.75,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 16870.8,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-04",
+      "units_produced": 36990,
+      "electricity": {
+        "value": 43.64,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 14803.9,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-05",
+      "units_produced": 36969,
+      "electricity": {
+        "value": 43.56,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 15009.2,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-06",
+      "units_produced": 40287,
+      "electricity": {
+        "value": 47.53,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 16258.6,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-07",
+      "units_produced": 41980,
+      "electricity": {
+        "value": 43.02,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 17305.5,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-08",
+      "units_produced": 41268,
+      "electricity": {
+        "value": 43.16,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 15938.5,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-09",
+      "units_produced": 53657,
+      "electricity": {
+        "value": 56.11,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 20588.7,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-10",
+      "units_produced": 46773,
+      "electricity": {
+        "value": 50.42,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 18903.3,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-11",
+      "units_produced": 52457,
+      "electricity": {
+        "value": 56.16,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 21058.8,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-TSHIRT",
+      "product_id": "TSHIRT",
+      "month": "2025-12",
+      "units_produced": 43027,
+      "electricity": {
+        "value": 45.11,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 17300.4,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-01",
+      "units_produced": 16106,
+      "electricity": {
+        "value": 50.28,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 18357.4,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-02",
+      "units_produced": 15489,
+      "electricity": {
+        "value": 48.61,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 16264.1,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-03",
+      "units_produced": 17216,
+      "electricity": {
+        "value": 52.7,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 18141.8,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-04",
+      "units_produced": 17230,
+      "electricity": {
+        "value": 52.13,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 18532.2,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-05",
+      "units_produced": 18390,
+      "electricity": {
+        "value": 56.55,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 19966.4,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-06",
+      "units_produced": 17163,
+      "electricity": {
+        "value": 52.46,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 19703.7,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-07",
+      "units_produced": 18426,
+      "electricity": {
+        "value": 50.6,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 19602.0,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-08",
+      "units_produced": 18659,
+      "electricity": {
+        "value": 49.87,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 20277.5,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-09",
+      "units_produced": 24262,
+      "electricity": {
+        "value": 66.74,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 26840.2,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-10",
+      "units_produced": 23164,
+      "electricity": {
+        "value": 64.49,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 26183.7,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-11",
+      "units_produced": 21524,
+      "electricity": {
+        "value": 57.07,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 23239.5,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-DHAKA-JEANS",
+      "product_id": "JEANS",
+      "month": "2025-12",
+      "units_produced": 17331,
+      "electricity": {
+        "value": 46.46,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 19908.5,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-01",
+      "units_produced": 10814,
+      "electricity": {
+        "value": 47.05,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 6589.3,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-02",
+      "units_produced": 10029,
+      "electricity": {
+        "value": 45.23,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 5992.6,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-03",
+      "units_produced": 11548,
+      "electricity": {
+        "value": 50.04,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 6971.3,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-04",
+      "units_produced": 11544,
+      "electricity": {
+        "value": 51.05,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 7201.9,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-05",
+      "units_produced": 11806,
+      "electricity": {
+        "value": 51.07,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 7436.0,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-06",
+      "units_produced": 12018,
+      "electricity": {
+        "value": 51.58,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 6884.2,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-07",
+      "units_produced": 11250,
+      "electricity": {
+        "value": 43.89,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 6947.2,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-08",
+      "units_produced": 11850,
+      "electricity": {
+        "value": 44.68,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 7025.8,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-09",
+      "units_produced": 16190,
+      "electricity": {
+        "value": 62.8,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 10171.6,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-10",
+      "units_produced": 15865,
+      "electricity": {
+        "value": 59.63,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 9729.1,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-11",
+      "units_produced": 15436,
+      "electricity": {
+        "value": 59.9,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 9045.6,
+        "unit": "m3"
+      }
+    },
+    {
+      "meter_id": "F-HANOI-SNEAKER",
+      "product_id": "SNEAKER",
+      "month": "2025-12",
+      "units_produced": 12270,
+      "electricity": {
+        "value": 46.4,
+        "unit": "MWh"
+      },
+      "natural_gas": {
+        "value": 7314.0,
+        "unit": "m3"
+      }
+    }
+  ]
+}

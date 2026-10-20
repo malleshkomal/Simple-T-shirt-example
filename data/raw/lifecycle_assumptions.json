@@ -1,0 +1,20 @@
+{
+  "TSHIRT": {
+    "washes": 50,
+    "kwh_per_wash": 0.07,
+    "landfill_share": 0.6,
+    "recycle_share": 0.4
+  },
+  "JEANS": {
+    "washes": 40,
+    "kwh_per_wash": 0.1,
+    "landfill_share": 0.7,
+    "recycle_share": 0.3
+  },
+  "SNEAKER": {
+    "washes": 0,
+    "kwh_per_wash": 0.0,
+    "landfill_share": 0.9,
+    "recycle_share": 0.1
+  }
+}
